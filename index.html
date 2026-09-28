@@ -22,11 +22,6 @@
   </header>
 
   <main class="wrap">
-    <div class="tabs" role="tablist">
-      <button type="button" role="tab" id="tab-overlay" aria-selected="true" aria-controls="panel-overlay" data-i18n="tabOverlay">Sleep screen overlay</button>
-      <button type="button" role="tab" id="tab-qr" aria-selected="false" aria-controls="panel-qr" data-i18n="tabQr">QR code only</button>
-    </div>
-
     <div class="layout">
       <form id="form" class="card" autocomplete="off" novalidate>
         <fieldset>
@@ -41,13 +36,23 @@
             <input id="email" type="email" inputmode="email"></label>
         </fieldset>
 
-        <fieldset class="overlay-only">
+        <fieldset>
           <legend data-i18n="banner">Banner</legend>
-          <label><span data-i18n="headline">Headline</span>
-            <input id="headline" type="text"></label>
-          <label><span data-i18n="message">Message</span>
-            <input id="message" type="text"></label>
-          <label class="check"><input id="withQr" type="checkbox" checked> <span data-i18n="withQr">Add a QR code with my contact card</span></label>
+          <div class="field">
+            <span class="field-label" data-i18n="content">Show</span>
+            <div class="segmented" role="radiogroup">
+              <label><input type="radio" name="content" value="textqr" checked><span data-i18n="contentTextQr">Text + QR code</span></label>
+              <label><input type="radio" name="content" value="text"><span data-i18n="contentText">Text only</span></label>
+              <label><input type="radio" name="content" value="qr"><span data-i18n="contentQr">QR code only</span></label>
+            </div>
+          </div>
+
+          <div id="textFields">
+            <label><span data-i18n="headline">Headline</span>
+              <input id="headline" type="text"></label>
+            <label><span data-i18n="message">Message</span>
+              <input id="message" type="text"></label>
+          </div>
 
           <div class="field">
             <span class="field-label" data-i18n="position">Position</span>
@@ -55,6 +60,15 @@
               <label><input type="radio" name="position" value="top" checked><span data-i18n="top">Top</span></label>
               <label><input type="radio" name="position" value="middle"><span data-i18n="middle">Middle</span></label>
               <label><input type="radio" name="position" value="bottom"><span data-i18n="bottom">Bottom</span></label>
+            </div>
+          </div>
+
+          <div class="field" id="alignField">
+            <span class="field-label"><span data-i18n="align">Alignment</span> <em data-i18n="alignHint">QR code only</em></span>
+            <div class="segmented" role="radiogroup">
+              <label><input type="radio" name="align" value="left"><span data-i18n="left">Left</span></label>
+              <label><input type="radio" name="align" value="center"><span data-i18n="center">Center</span></label>
+              <label><input type="radio" name="align" value="right" checked><span data-i18n="right">Right</span></label>
             </div>
           </div>
 
@@ -67,20 +81,13 @@
           </div>
         </fieldset>
 
-        <fieldset class="qr-only" hidden>
-          <legend data-i18n="qrOptions">QR code</legend>
-          <label><span data-i18n="qrSize">Size (pixels)</span>
-            <input id="qrSize" type="number" min="100" max="2000" step="10" value="400"></label>
-          <label class="check"><input id="qrTransparent" type="checkbox"> <span data-i18n="qrTransparent">Transparent background</span></label>
-        </fieldset>
-
         <p class="privacy" data-i18n="privacy">Everything happens in this browser tab. Nothing you type is sent or stored anywhere.</p>
       </form>
 
       <section class="card preview-card" aria-labelledby="preview-heading">
         <div class="preview-head">
           <h2 id="preview-heading" data-i18n="preview">Preview</h2>
-          <div class="segmented small overlay-only" role="radiogroup" aria-label="Background">
+          <div class="segmented small" role="radiogroup" aria-label="Background">
             <label><input type="radio" name="bg" value="page" checked><span data-i18n="bgPage">Book page</span></label>
             <label><input type="radio" name="bg" value="cover"><span data-i18n="bgCover">Cover</span></label>
             <label><input type="radio" name="bg" value="none"><span data-i18n="bgNone">Overlay only</span></label>
@@ -96,7 +103,7 @@
       </section>
     </div>
 
-    <section class="card howto overlay-only">
+    <section class="card howto">
       <h2 data-i18n="howto">Install it on the reader</h2>
       <ol>
         <li data-i18n-html="step1">Copy <code>sleep-overlay.png</code> to the root of the SD card. For several overlays picked at random, put them in a <code>.sleep-overlay</code> folder instead.</li>

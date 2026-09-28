@@ -12,8 +12,6 @@ const I18N = {
   en: {
     title: "Lost XTE Tag",
     lede: "Readers get left on trains, in cafés and in hotel rooms. Put your contact details on the sleep screen of your Xteink reader running CrossPoint, so whoever finds it can get it back to you.",
-    tabOverlay: "Sleep screen overlay",
-    tabQr: "QR code only",
     contact: "Contact details",
     name: "Name",
     phone: "Phone",
@@ -23,22 +21,26 @@ const I18N = {
     banner: "Banner",
     headline: "Headline",
     message: "Message",
-    withQr: "Add a QR code with my contact card",
+    content: "Show",
+    contentTextQr: "Text + QR code",
+    contentText: "Text only",
+    contentQr: "QR code only",
     position: "Position",
+    align: "Alignment",
+    alignHint: "QR code only",
+    left: "Left",
+    center: "Center",
+    right: "Right",
     top: "Top",
     middle: "Middle",
     bottom: "Bottom",
     device: "Device",
-    qrOptions: "QR code",
-    qrSize: "Size (pixels)",
-    qrTransparent: "Transparent background",
     privacy: "Everything happens in this browser tab. Nothing you type is sent or stored anywhere.",
     preview: "Preview",
     bgPage: "Book page",
     bgCover: "Cover",
     bgNone: "Overlay only",
     download: "Download sleep-overlay.png",
-    downloadQr: "Download contact-qr.png",
     howto: "Install it on the reader",
     step1: "Copy <code>sleep-overlay.png</code> to the root of the SD card. For several overlays picked at random, put them in a <code>.sleep-overlay</code> folder instead.",
     step2: "In CrossPoint, open <b>Settings → Display</b> and turn on <b>Sleep Screen Overlay</b>.",
@@ -53,16 +55,12 @@ const I18N = {
     needPhone: "Add a phone number or an email so the finder can reach you.",
     tooLong: "Some text is too long for the banner and was cut. Try a shorter version.",
     qrInfo: (n, m) => `QR code: ${n}×${n} modules, ${m} px each.`,
-    qrSizeInfo: (px) => `Image size: ${px}×${px} px (rounded so every module has whole pixels).`,
-    qrTransparentWarn: "Phones read QR codes best on a light background. Keep one behind it.",
     coverTitle: "The Long Way Home",
     coverAuthor: "A Novel",
   },
   pl: {
     title: "Lost XTE Tag",
     lede: "Czytniki zostają w pociągach, kawiarniach i hotelach. Umieść swoje dane kontaktowe na ekranie uśpienia czytnika Xteink z CrossPoint, żeby znalazca mógł go do Ciebie oddać.",
-    tabOverlay: "Nakładka wygaszacza",
-    tabQr: "Tylko kod QR",
     contact: "Dane kontaktowe",
     name: "Imię i nazwisko",
     phone: "Telefon",
@@ -72,22 +70,26 @@ const I18N = {
     banner: "Baner",
     headline: "Nagłówek",
     message: "Tekst",
-    withQr: "Dodaj kod QR z moją wizytówką",
+    content: "Pokaż",
+    contentTextQr: "Tekst + kod QR",
+    contentText: "Tylko tekst",
+    contentQr: "Tylko kod QR",
     position: "Położenie",
+    align: "Wyrównanie",
+    alignHint: "tylko kod QR",
+    left: "Lewo",
+    center: "Środek",
+    right: "Prawo",
     top: "Góra",
     middle: "Środek",
     bottom: "Dół",
     device: "Urządzenie",
-    qrOptions: "Kod QR",
-    qrSize: "Rozmiar (piksele)",
-    qrTransparent: "Przezroczyste tło",
     privacy: "Wszystko dzieje się w tej karcie przeglądarki. Nic, co wpiszesz, nie jest nigdzie wysyłane ani zapisywane.",
     preview: "Podgląd",
     bgPage: "Strona książki",
     bgCover: "Okładka",
     bgNone: "Sama nakładka",
     download: "Pobierz sleep-overlay.png",
-    downloadQr: "Pobierz contact-qr.png",
     howto: "Instalacja na czytniku",
     step1: "Skopiuj <code>sleep-overlay.png</code> do głównego katalogu karty SD. Jeśli chcesz kilka losowanych nakładek, umieść je w folderze <code>.sleep-overlay</code>.",
     step2: "W CrossPoint otwórz <b>Ustawienia → Wyświetlacz</b> i włącz <b>Nakładka wygaszacza</b>.",
@@ -102,8 +104,6 @@ const I18N = {
     needPhone: "Dodaj numer telefonu lub e-mail, żeby znalazca mógł się z Tobą skontaktować.",
     tooLong: "Część tekstu nie mieści się na banerze i została ucięta. Spróbuj krótszej wersji.",
     qrInfo: (n, m) => `Kod QR: ${n}×${n} modułów, po ${m} px.`,
-    qrSizeInfo: (px) => `Rozmiar obrazu: ${px}×${px} px (zaokrąglony, żeby każdy moduł miał całe piksele).`,
-    qrTransparentWarn: "Telefony najlepiej czytają kody QR na jasnym tle. Zostaw pod nim jasne tło.",
     coverTitle: "Długa droga do domu",
     coverAuthor: "Powieść",
   },
@@ -117,9 +117,8 @@ const statusEl = $("status");
 const downloadBtn = $("download");
 
 let lang = navigator.language?.toLowerCase().startsWith("pl") ? "pl" : "en";
-let mode = "overlay";
 const edited = { headline: false, message: false };
-let lastOutput = null; // { canvas, filename }
+let lastOutput = null; // canvas of the current overlay
 
 const t = (key) => I18N[lang][key];
 
@@ -135,12 +134,11 @@ function readState() {
     email: val("email"),
     headline: val("headline"),
     message: val("message"),
-    withQr: $("withQr").checked,
+    content: radio("content"),
+    align: radio("align"),
     position: radio("position"),
     device: radio("device"),
     bg: document.querySelector('input[name="bg"]:checked')?.value,
-    qrSize: Math.min(2000, Math.max(100, Number($("qrSize").value) || 400)),
-    qrTransparent: $("qrTransparent").checked,
   };
 }
 
@@ -212,6 +210,43 @@ function fitFont(ctx, text, weight, size, maxWidth, minSize = 12) {
   return { size: minSize, clipped: ctx.measureText(text).width > maxWidth };
 }
 
+// QR code with a caption in its own outlined box, placed in a corner or edge.
+function renderQrBadge(s, canvas, ctx, hasContact) {
+  const W = canvas.width;
+  const H = canvas.height;
+  if (!hasContact) return { canvas, warnings: ["needPhone"], qr: null, module: 0 };
+
+  const margin = 10;
+  const qr = makeQr(buildVCard(s));
+  const module = Math.max(2, Math.floor(Math.min(210, W * 0.4) / qr.count));
+  const qrPx = qr.count * module;
+  const pad = Math.max(12, module * 4); // 4-module quiet zone
+  const captionH = 24;
+  const boxW = qrPx + pad * 2;
+  const boxH = qrPx + captionH + pad * 2 - 4;
+  const x0 = s.align === "left" ? margin : s.align === "center" ? Math.round((W - boxW) / 2) : W - margin - boxW;
+  const y0 = s.position === "bottom" ? H - margin - boxH : s.position === "middle" ? Math.round((H - boxH) / 2) : margin;
+
+  ctx.fillStyle = "#fff";
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.roundRect(x0 + 1.5, y0 + 1.5, boxW - 3, boxH - 3, 12);
+  ctx.fill();
+  ctx.stroke();
+
+  drawQr(ctx, qr, x0 + pad, y0 + pad, module);
+  ctx.fillStyle = "#000";
+  ctx.textBaseline = "top";
+  const fit = fitFont(ctx, t("scan"), 400, 15, qrPx);
+  ctx.font = `400 ${fit.size}px ${FONT}`;
+  const cw = ctx.measureText(t("scan")).width;
+  ctx.fillText(t("scan"), x0 + pad + (qrPx - cw) / 2, y0 + pad + qrPx + 7);
+
+  snapToBlackWhite(canvas);
+  return { canvas, warnings: [], qr, module };
+}
+
 function renderOverlay(s) {
   const [W, H] = DEVICES[s.device] || DEVICES.x3;
   const canvas = document.createElement("canvas");
@@ -221,12 +256,14 @@ function renderOverlay(s) {
 
   const margin = 10;
   const warnings = [];
+  const hasContact = s.phone || s.email || s.altPhone;
+  if (s.content === "qr") return renderQrBadge(s, canvas, ctx, hasContact);
+
   let qr = null;
   let module = 0;
   let qrPx = 0;
 
-  const hasContact = s.phone || s.email || s.altPhone;
-  if (s.withQr && hasContact) {
+  if (s.content !== "text" && hasContact) {
     qr = makeQr(buildVCard(s));
     module = Math.max(2, Math.floor(Math.min(190, W * 0.36) / qr.count));
     qrPx = qr.count * module;
@@ -392,60 +429,27 @@ function setStatus(messages, warn) {
 
 function render() {
   const s = readState();
-  if (mode === "overlay") {
-    const { canvas, warnings, qr, module } = renderOverlay(s);
-    preview.width = canvas.width;
-    preview.height = canvas.height;
-    const ctx = preview.getContext("2d");
-    ctx.clearRect(0, 0, preview.width, preview.height);
-    if (s.bg === "page") drawBookPage(ctx, preview.width, preview.height);
-    else if (s.bg === "cover") drawCover(ctx, preview.width, preview.height);
-    ctx.drawImage(canvas, 0, 0);
-    deviceBox.classList.toggle("checker", s.bg === "none");
-    deviceBox.classList.remove("bare");
+  const qrOnly = s.content === "qr";
+  $("textFields").hidden = qrOnly;
+  const alignField = $("alignField");
+  alignField.classList.toggle("disabled", !qrOnly);
+  for (const input of alignField.querySelectorAll("input")) input.disabled = !qrOnly;
 
-    const msgs = [...new Set(warnings)].map((w) => t(w));
-    if (!msgs.length && qr) msgs.push(t("qrInfo")(qr.count, module));
-    setStatus(msgs, warnings.length);
-    downloadBtn.disabled = warnings.includes("needPhone");
-    lastOutput = { canvas, filename: "sleep-overlay.png" };
-  } else {
-    const hasContact = s.phone || s.email || s.altPhone;
-    if (!hasContact) {
-      preview.width = preview.height = 300;
-      preview.getContext("2d").clearRect(0, 0, 300, 300);
-      setStatus([t("needPhone")], true);
-      downloadBtn.disabled = true;
-      lastOutput = null;
-      deviceBox.classList.add("bare", "checker");
-      return;
-    }
-    const qr = makeQr(buildVCard(s));
-    const quiet = 4;
-    const module = Math.max(1, Math.floor(s.qrSize / (qr.count + quiet * 2)));
-    const px = module * (qr.count + quiet * 2);
-    const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = px;
-    const ctx = canvas.getContext("2d");
-    if (!s.qrTransparent) {
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, px, px);
-    }
-    drawQr(ctx, qr, quiet * module, quiet * module, module);
+  const { canvas, warnings, qr, module } = renderOverlay(s);
+  preview.width = canvas.width;
+  preview.height = canvas.height;
+  const ctx = preview.getContext("2d");
+  ctx.clearRect(0, 0, preview.width, preview.height);
+  if (s.bg === "page") drawBookPage(ctx, preview.width, preview.height);
+  else if (s.bg === "cover") drawCover(ctx, preview.width, preview.height);
+  ctx.drawImage(canvas, 0, 0);
+  deviceBox.classList.toggle("checker", s.bg === "none");
 
-    preview.width = preview.height = px;
-    const pctx = preview.getContext("2d");
-    pctx.clearRect(0, 0, px, px);
-    pctx.drawImage(canvas, 0, 0);
-    deviceBox.classList.add("bare");
-    deviceBox.classList.toggle("checker", s.qrTransparent);
-
-    const msgs = [t("qrInfo")(qr.count, module), t("qrSizeInfo")(px)];
-    if (s.qrTransparent) msgs.push(t("qrTransparentWarn"));
-    setStatus(msgs, false);
-    downloadBtn.disabled = false;
-    lastOutput = { canvas, filename: "contact-qr.png" };
-  }
+  const msgs = [...new Set(warnings)].map((w) => t(w));
+  if (!msgs.length && qr) msgs.push(t("qrInfo")(qr.count, module));
+  setStatus(msgs, warnings.length);
+  downloadBtn.disabled = warnings.includes("needPhone");
+  lastOutput = canvas;
 }
 
 // ---------------------------------------------------------------- i18n + UI wiring
@@ -458,27 +462,16 @@ function applyLang(next) {
   for (const b of document.querySelectorAll("[data-lang]")) b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
   if (!edited.headline) $("headline").value = t("defHeadline");
   if (!edited.message) $("message").value = t("defMessage");
-  downloadBtn.textContent = mode === "overlay" ? t("download") : t("downloadQr");
-  render();
-}
-
-function setMode(next) {
-  mode = next;
-  $("tab-overlay").setAttribute("aria-selected", String(mode === "overlay"));
-  $("tab-qr").setAttribute("aria-selected", String(mode === "qr"));
-  for (const el of document.querySelectorAll(".overlay-only")) el.hidden = mode !== "overlay";
-  for (const el of document.querySelectorAll(".qr-only")) el.hidden = mode !== "qr";
-  downloadBtn.textContent = mode === "overlay" ? t("download") : t("downloadQr");
   render();
 }
 
 function download() {
   if (!lastOutput) return;
-  lastOutput.canvas.toBlob((blob) => {
+  lastOutput.toBlob((blob) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = lastOutput.filename;
+    a.download = "sleep-overlay.png";
     document.body.append(a);
     a.click();
     a.remove();
@@ -493,8 +486,6 @@ form.addEventListener("change", render);
 form.addEventListener("submit", (e) => e.preventDefault());
 document.querySelector(".preview-head").addEventListener("change", render);
 for (const b of document.querySelectorAll("[data-lang]")) b.addEventListener("click", () => applyLang(b.dataset.lang));
-$("tab-overlay").addEventListener("click", () => setMode("overlay"));
-$("tab-qr").addEventListener("click", () => setMode("qr"));
 downloadBtn.addEventListener("click", download);
 
 applyLang(lang);

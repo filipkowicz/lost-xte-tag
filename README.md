@@ -4,9 +4,13 @@ Lost your e-reader? Readers get left on trains, in cafés and in hotel rooms. **
 
 **Try it:** https://filipkowicz.github.io/lost-xte-tag/
 
-Enter your name, phone number(s) and email, choose whether to include a QR code with your contact card (vCard), and where the banner goes (top, middle or bottom). Download `sleep-overlay.png`, copy it to the SD card, and the banner appears on the reader's sleep screen, so whoever finds a lost reader can get it back to you.
+Enter your name, phone number(s) and email, then choose what the overlay shows:
 
-There is also a **QR code only** mode that makes just the contact QR code as a PNG.
+- **Text + QR code**: a banner with your details and a QR code with your contact card (vCard).
+- **Text only**: the banner without the QR code.
+- **QR code only**: a compact box with just the QR code and "scan for contact", placed left, center or right.
+
+Pick top, middle or bottom, download `sleep-overlay.png`, copy it to the SD card, and it appears on the reader's sleep screen, so whoever finds a lost reader can get it back to you.
 
 ## Privacy
 
