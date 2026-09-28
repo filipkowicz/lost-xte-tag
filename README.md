@@ -36,6 +36,16 @@ python3 -m http.server 8000
 
 and open http://localhost:8000. (Opening `index.html` straight from disk does not work, because browsers block ES modules on `file://`.)
 
+## Deploying
+
+GitHub Pages serves the `prod` branch (root folder). Work happens on `main`; to release, fast-forward `prod` to it:
+
+```sh
+git push origin main:prod
+```
+
+Pages rebuilds automatically within a minute or two.
+
 ## Credits
 
 QR codes are generated with [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) by Kazuhiko Arase (MIT), included in `vendor/`. "QR Code" is a registered trademark of DENSO WAVE INCORPORATED.
