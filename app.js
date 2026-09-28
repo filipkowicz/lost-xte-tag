@@ -10,8 +10,8 @@ const FONT = 'Arial, "Helvetica Neue", Helvetica, "Liberation Sans", sans-serif'
 
 const I18N = {
   en: {
-    title: "If-found overlay maker",
-    lede: "A contact banner for the sleep screen of your Xteink e-reader running CrossPoint, so whoever finds it can get it back to you.",
+    title: "Lost XTE Tag",
+    lede: "Readers get left on trains, in cafés and in hotel rooms. Put your contact details on the sleep screen of your Xteink reader running CrossPoint, so whoever finds it can get it back to you.",
     tabOverlay: "Sleep screen overlay",
     tabQr: "QR code only",
     contact: "Contact details",
@@ -59,8 +59,8 @@ const I18N = {
     coverAuthor: "A Novel",
   },
   pl: {
-    title: "Generator nakładki „jeśli znaleziono”",
-    lede: "Baner z kontaktem na ekran uśpienia czytnika Xteink z CrossPoint, żeby znalazca mógł go do Ciebie oddać.",
+    title: "Lost XTE Tag",
+    lede: "Czytniki zostają w pociągach, kawiarniach i hotelach. Umieść swoje dane kontaktowe na ekranie uśpienia czytnika Xteink z CrossPoint, żeby znalazca mógł go do Ciebie oddać.",
     tabOverlay: "Nakładka wygaszacza",
     tabQr: "Tylko kod QR",
     contact: "Dane kontaktowe",

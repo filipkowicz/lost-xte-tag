@@ -1,6 +1,8 @@
-# If-found overlay maker
+# Lost XTE Tag
 
-A small web page that makes an **"if found, please return"** sleep-screen overlay for Xteink e-readers (X3, X4) running [CrossPoint](https://github.com/crosspoint-reader/crosspoint-reader).
+Lost your e-reader? Readers get left on trains, in cafés and in hotel rooms. **Lost XTE Tag** puts an **"if found, please return"** banner with your contact details on the sleep screen of Xteink e-readers (X3, X4) running [CrossPoint](https://github.com/crosspoint-reader/crosspoint-reader), so whoever finds it can get it back to you.
+
+**Try it:** https://filipkowicz.github.io/lost-xte-tag/
 
 Enter your name, phone number(s) and email, choose whether to include a QR code with your contact card (vCard), and where the banner goes (top, middle or bottom). Download `sleep-overlay.png`, copy it to the SD card, and the banner appears on the reader's sleep screen, so whoever finds a lost reader can get it back to you.
 
