@@ -12,6 +12,14 @@ Enter your name, phone number(s) and email, then choose what the overlay shows:
 
 Pick top, middle or bottom, download `sleep-overlay.png`, copy it to the SD card, and it appears on the reader's sleep screen, so whoever finds a lost reader can get it back to you.
 
+## Examples
+
+Previews from the generator (X3, 528×792, sample contact details):
+
+| Text + QR on a cover | QR only, bottom right | Text + QR over the current page | Text only |
+|---|---|---|---|
+| <img src="docs/examples/text-qr-cover-top.png" width="200" alt="Contact banner with QR code at the top of a book cover"> | <img src="docs/examples/qr-only-cover-bottom-right.png" width="200" alt="QR code box in the bottom right corner of a book cover"> | <img src="docs/examples/text-qr-page-bottom.png" width="200" alt="Contact banner with QR code at the bottom of a book page"> | <img src="docs/examples/text-only-page-top.png" width="200" alt="Text-only contact banner at the top of a book page"> |
+
 ## Privacy
 
 Everything runs in your browser. There is no server, no analytics and no storage: nothing you type leaves the page.
